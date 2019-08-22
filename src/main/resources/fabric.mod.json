@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "fauth",
+  "version": "${version}",
+
+  "name": "fauth",
+  "description": "online-mode=false is useful now.",
+  "authors": [
+    "ImUrX"
+  ],
+  "contact": {
+    "homepage": "https://github.com/bongoStudios",
+    "sources": "https://github.com/bongoStudios/fauth.git"
+  },
+
+  "license": "MIT",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "tk.bongostudios.fauth.FauthMod"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
