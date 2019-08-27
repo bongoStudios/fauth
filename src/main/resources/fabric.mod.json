@@ -18,14 +18,14 @@
 
   "environment": "server",
   "entrypoints": {
-    "server": [
-      "tk.bongostudios.fauth.FauthMod"
+    "main": [
     ]
   },
-
+  "mixins": [
+    "fauth.mixins.json"
+  ],
   "depends": {
-    "fabricloader": ">=0.4.0",
-    "fabric": "*"
+    "fabricloader": ">=0.4.0"
   },
   "suggests": {
     "flamingo": "*"

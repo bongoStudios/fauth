@@ -1,15 +1,22 @@
 package tk.bongostudios.fauth;
 
-import net.fabricmc.api.DedicatedServerModInitializer;
-import org.mindrot.jbcrypt.BCrypt;
+import com.mojang.brigadier.CommandDispatcher;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
+import tk.bongostudios.fauth.db.Database;
 
-public class FauthMod implements DedicatedServerModInitializer {
-	@Override
-	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+public class FauthMod {
+	static Database db;
+	public static MinecraftServer server;
 
-		System.out.println("Hello Fabric world!");
+	public static void onInitializeServer(MinecraftServer server) {
+		FauthMod.server = server;
+		String sqliteFile = "jdbc:sqlite:" + FabricLoader.getInstance().getConfigDirectory().getAbsolutePath() + "/fauth.db";
+		FauthMod.db = new Database(sqliteFile);
+	}
+
+	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+		
 	}
 }
