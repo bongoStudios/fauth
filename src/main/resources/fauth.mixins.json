@@ -6,7 +6,8 @@
     "MinecraftServerMixin",
     "CommandManagerMixin",
     "PlayerManagerMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "BlockItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

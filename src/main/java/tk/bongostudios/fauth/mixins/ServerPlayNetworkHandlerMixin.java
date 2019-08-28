@@ -1,7 +1,6 @@
 package tk.bongostudios.fauth.mixins;
 
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
