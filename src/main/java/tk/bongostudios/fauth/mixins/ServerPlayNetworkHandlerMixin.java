@@ -1,6 +1,7 @@
 package tk.bongostudios.fauth.mixins;
 
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,7 +11,6 @@ import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
 import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 import net.minecraft.text.Text;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,15 +60,20 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 
     @Inject(method = "onPlayerAction", at = @At("HEAD"), cancellable = true)
-    public void onPlayerAction(PlayerActionC2SPacket playerActionC2SPacket_1, CallbackInfo ci) {
-        if(!(playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM || playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM)) {
-            return;
-        } 
+    public void onPlayerDrop(PlayerActionC2SPacket playerActionC2SPacket_1, CallbackInfo ci) {
+        if(!(playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM || playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM) || Auth.hasLoggedIn(player)) return;
+        ci.cancel();
+    }
+
+    @Inject(method = "onPlayerAction", at = @At("HEAD"), cancellable = true)
+    public void onPlayerBreak(PlayerActionC2SPacket playerActionC2SPacket_1, CallbackInfo ci) {
         if(!this.player.isCreative()) {
             if(playerActionC2SPacket_1.getAction() != PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) return;
+        }
+        if(!Auth.hasLoggedIn(player)) {
             this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.player.world, playerActionC2SPacket_1.getPos()));
-        } 
-        if(!Auth.hasLoggedIn(player)) ci.cancel();
+            ci.cancel();
+        }
     }
 
     @Inject(method = "onPlayerInteractBlock", at = @At("HEAD"), cancellable = true)
