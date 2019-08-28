@@ -13,13 +13,14 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class RegisterCommand {
+public class ChangePasswordCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> command = literal("register")
+        LiteralArgumentBuilder<ServerCommandSource> command = literal("changepass")
             .requires(src -> {
                 try {
-                    return !Auth.hasAccount(src.getPlayer().getUuid());
+                    ServerPlayerEntity player = src.getPlayer();
+                    return Auth.hasAccount(player.getUuid()) && Auth.hasLoggedIn(player);
                 } catch(CommandSyntaxException e) {
                     return false;
                 }
@@ -33,9 +34,7 @@ public class RegisterCommand {
                     player.sendMessage(new LiteralText("§cThe password is not the same as the second one!"));
                     return 1;
                 }
-                Auth.register(player.getUuid(), pass);
-                Auth.removeDescriptor(player.getUuid());
-                Auth.addLoggedIn(player);
+                Auth.changePassword(player.getUuid(), pass);
                 return 1;
             });
         dispatcher.register(command);

@@ -3,7 +3,9 @@
   "package": "tk.bongostudios.fauth.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "CommandManagerMixin",
+    "PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

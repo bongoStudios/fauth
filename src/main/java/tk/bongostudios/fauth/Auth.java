@@ -8,11 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Auth {
+    public static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
     private static final Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
     private static final Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
 
@@ -35,6 +38,13 @@ public class Auth {
         return false;
     }
 
+    public static boolean changePassword(UUID uuid, String password) {
+        if(!FauthMod.db.hasUserByUUID(uuid)) return false;
+        String salt = BCrypt.gensalt();
+        FauthMod.db.updateUserByUUID(uuid, BCrypt.hashpw(password, salt), salt);
+        return true;
+    }
+
     public static boolean hasAccount(UUID uuid) {
         return FauthMod.db.hasUserByUUID(uuid);
     }
@@ -53,6 +63,10 @@ public class Auth {
 
     public static boolean hasDescriptor(UUID uuid) {
         return tasks.containsKey(uuid);
+    }
+    
+    public static Descriptor whichDescriptor(UUID uuid) {
+        return tasks.get(uuid);
     }
 
     public static void addDescriptor(UUID uuid, Descriptor descriptor) {

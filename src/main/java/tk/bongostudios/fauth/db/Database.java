@@ -42,19 +42,33 @@ public class Database {
             stmt.setString(3, salt);
             stmt.executeUpdate();
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
-    public ResultSet getUserByUUID(UUID uuid) {
-        String sql = "SELECT * FROM users WHERE uuid = ?";
+    public static final String updateUser = "UPDATE users SET hash = ?, salt = ? WHERE uuid = ?";
+    public void updateUserByUUID(UUID uuid, String hash, String salt) {
         try {
-            PreparedStatement stmt = this.connect().prepareStatement(sql);
+            PreparedStatement stmt = this.connect().prepareStatement(getUser);
+            stmt.setString(1, hash);
+            stmt.setString(2, salt);
+            stmt.setString(3, uuid.toString());
+            stmt.executeQuery();
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static final String getUser = "SELECT * FROM users WHERE uuid = ?";
+    public ResultSet getUserByUUID(UUID uuid) {
+        
+        try {
+            PreparedStatement stmt = this.connect().prepareStatement(getUser);
             stmt.setString(1, uuid.toString());
             ResultSet results = stmt.executeQuery();
             return results;
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return null;
     }
@@ -67,7 +81,7 @@ public class Database {
             ResultSet results = stmt.executeQuery();
             return results.next();
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return false;
     }
