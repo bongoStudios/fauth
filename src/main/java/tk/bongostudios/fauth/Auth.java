@@ -45,6 +45,10 @@ public class Auth {
         return true;
     }
 
+    public static void delete(UUID uuid) {
+        FauthMod.db.delUserByUUID(uuid);
+    }
+
     public static boolean hasAccount(UUID uuid) {
         return FauthMod.db.hasUserByUUID(uuid);
     }

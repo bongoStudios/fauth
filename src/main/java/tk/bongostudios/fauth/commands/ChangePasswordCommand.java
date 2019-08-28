@@ -25,18 +25,21 @@ public class ChangePasswordCommand {
                     return false;
                 }
             })
-            .then(argument("password", word()))
-            .then(argument("verify", word()))
-            .executes(c -> {
-                ServerPlayerEntity player = (ServerPlayerEntity) c.getSource().getEntity();
-                String pass = getString(c, "password");
-                if(pass != getString(c, "verifyPassword")) {
-                    player.sendMessage(new LiteralText("§cThe password is not the same as the second one!"));
-                    return 1;
-                }
-                Auth.changePassword(player.getUuid(), pass);
-                return 1;
-            });
+            .then(argument("password", word())
+                .then(argument("verify", word())
+                    .executes(c -> {
+                        ServerPlayerEntity player = (ServerPlayerEntity) c.getSource().getEntity();
+                        String pass = getString(c, "password");
+                        if(pass == getString(c, "verify")) {
+                            player.sendMessage(new LiteralText("§cThe password is not the same as the second one!"));
+                            return 1;
+                        }
+                        Auth.changePassword(player.getUuid(), pass);
+                        player.sendMessage(new LiteralText("§aYou have changed your password!"));
+                        return 1;
+                    })
+                )
+            );
         dispatcher.register(command);
     }
 }

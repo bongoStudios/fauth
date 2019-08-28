@@ -30,7 +30,7 @@ public abstract class PlayerManagerMixin {
         Auth.scheduler.schedule(() -> {
             future.cancel(true);
             if(!Auth.hasLoggedIn(player)) {
-                connection.disconnect(new LiteralText("§cYou took too much time!"));
+                connection.disconnect(new LiteralText("You took too much time!"));
             }
         }, 18, TimeUnit.SECONDS);
     }

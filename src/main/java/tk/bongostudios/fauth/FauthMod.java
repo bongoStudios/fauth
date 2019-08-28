@@ -5,6 +5,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import tk.bongostudios.fauth.commands.ChangePasswordCommand;
+import tk.bongostudios.fauth.commands.DeleteAccountCommand;
+import tk.bongostudios.fauth.commands.ForceLoginCommand;
 import tk.bongostudios.fauth.commands.LoginCommand;
 import tk.bongostudios.fauth.commands.RegisterCommand;
 import tk.bongostudios.fauth.db.Database;
@@ -23,5 +25,7 @@ public class FauthMod {
 		RegisterCommand.register(dispatcher);
 		LoginCommand.register(dispatcher);
 		ChangePasswordCommand.register(dispatcher);
+		ForceLoginCommand.register(dispatcher);
+		DeleteAccountCommand.register(dispatcher);
 	}
 }

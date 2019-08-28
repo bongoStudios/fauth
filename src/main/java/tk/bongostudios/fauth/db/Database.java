@@ -23,7 +23,7 @@ public class Database {
         try {
             Connection conn = this.connect();
             Statement stmt = conn.createStatement();
-            stmt.execute(Database.table);
+            stmt.execute(table);
         } catch(SQLException e) {
             System.err.println(e.getErrorCode());
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class Database {
 
     public void saveNewUser(UUID uuid, String hash, String salt) {
         try {
-            PreparedStatement stmt = this.connect().prepareStatement(Database.newUser);
+            PreparedStatement stmt = this.connect().prepareStatement(newUser);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, hash);
             stmt.setString(3, salt);
@@ -49,11 +49,11 @@ public class Database {
     public static final String updateUser = "UPDATE users SET hash = ?, salt = ? WHERE uuid = ?";
     public void updateUserByUUID(UUID uuid, String hash, String salt) {
         try {
-            PreparedStatement stmt = this.connect().prepareStatement(getUser);
+            PreparedStatement stmt = this.connect().prepareStatement(updateUser);
             stmt.setString(1, hash);
             stmt.setString(2, salt);
             stmt.setString(3, uuid.toString());
-            stmt.executeQuery();
+            stmt.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
         }
@@ -73,10 +73,10 @@ public class Database {
         return null;
     }
 
+    public static final String hasUser = "SELECT * FROM users WHERE uuid = ?";
     public boolean hasUserByUUID(UUID uuid) {
-        String sql = "SELECT * FROM users WHERE uuid = ?";
         try {
-            PreparedStatement stmt = this.connect().prepareStatement(sql);
+            PreparedStatement stmt = this.connect().prepareStatement(hasUser);
             stmt.setString(1, uuid.toString());
             ResultSet results = stmt.executeQuery();
             return results.next();
@@ -84,6 +84,17 @@ public class Database {
             System.err.println(e.getMessage());
         }
         return false;
+    }
+
+    public static final String delUser = "DELETE FROM users WHERE uuid = ?";
+    public void delUserByUUID(UUID uuid) {
+        try {
+            PreparedStatement stmt = this.connect().prepareStatement(delUser);
+            stmt.setString(1, uuid.toString());
+            stmt.executeUpdate();
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public String getLocation() {
