@@ -1,6 +1,7 @@
 package tk.bongostudios.fauth.mixins;
 
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
+import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -95,6 +96,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
     @Inject(method = "onClickWindow", at = @At("HEAD"), cancellable = true)
     public void onPickFromInventory(ClickWindowC2SPacket clickWindowC2SPacket_1, CallbackInfo ci) {
         if(Auth.hasLoggedIn(player)) return;
+        this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket_1.getSyncId(), clickWindowC2SPacket_1.getTransactionId(), false));
         ci.cancel();
     }
 }

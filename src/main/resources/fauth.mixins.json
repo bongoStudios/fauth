@@ -7,7 +7,7 @@
     "CommandManagerMixin",
     "PlayerManagerMixin",
     "ServerPlayNetworkHandlerMixin",
-    "BlockItemMixin"
+    "ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

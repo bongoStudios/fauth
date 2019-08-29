@@ -2,6 +2,8 @@ package tk.bongostudios.fauth.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
@@ -30,6 +32,11 @@ public class ForceLoginCommand {
                     if(Auth.hasLoggedIn(player)) {
                         c.getSource().sendFeedback(new LiteralText("§cThat player is already logged in"), false);
                         return 1;
+                    }
+                    if((player.hasStatusEffect(StatusEffects.BLINDNESS) || player.hasStatusEffect(StatusEffects.INVISIBILITY)) && Auth.hasPotion(player)) {
+                        player.removeStatusEffect(StatusEffects.INVISIBILITY);
+                        player.removeStatusEffect(StatusEffects.BLINDNESS);
+                        Auth.removePotion(player);
                     }
                     Auth.removeDescriptor(player.getUuid());
                     Auth.addLoggedIn(player);

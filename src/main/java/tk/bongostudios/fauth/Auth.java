@@ -17,6 +17,7 @@ import java.sql.SQLException;
 public class Auth {
     public static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
     private static final Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
+    private static final Set<PlayerEntity> potionEffect = new HashSet<PlayerEntity>();
     private static final Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
 
     public static void register(UUID uuid, String password) {
@@ -79,5 +80,17 @@ public class Auth {
 
     public static void removeDescriptor(UUID uuid) {
         tasks.remove(uuid);
+    }
+
+    public static boolean hasPotion(PlayerEntity player) {
+        return potionEffect.contains(player);
+    }
+
+    public static void addPotion(PlayerEntity player) {
+        potionEffect.add(player);
+    }
+
+    public static void removePotion(PlayerEntity player) {
+        potionEffect.remove(player);
     }
 }

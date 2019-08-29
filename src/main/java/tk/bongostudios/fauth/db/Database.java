@@ -98,6 +98,14 @@ public class Database {
             System.err.println(e.getMessage());
         }
     }
+    
+    public void close() {
+        try {
+            this.conn.close();
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
     public String getLocation() {
         return this.loc;
