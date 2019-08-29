@@ -2,8 +2,10 @@ package tk.bongostudios.fauth.mixins;
 
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
+import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.packet.ClickWindowC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
@@ -20,7 +22,7 @@ import tk.bongostudios.fauth.Auth;
 import java.util.Collections;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerPlayNetworkHandlerMixin {
+public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
 
     @Shadow
     public ServerPlayerEntity player;
@@ -90,4 +92,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if(!Auth.hasLoggedIn(player)) ci.cancel();
     }
 
+    @Inject(method = "onClickWindow", at = @At("HEAD"), cancellable = true)
+    public void onPickFromInventory(ClickWindowC2SPacket clickWindowC2SPacket_1, CallbackInfo ci) {
+        if(Auth.hasLoggedIn(player)) return;
+        ci.cancel();
+    }
 }
