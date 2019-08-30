@@ -44,6 +44,6 @@ public abstract class PlayerManagerMixin {
             if(!Auth.hasLoggedIn(player)) {
                 player.networkHandler.disconnect(new LiteralText("You took too much time!"));
             }
-        }, 18, TimeUnit.SECONDS);
+        }, 29, TimeUnit.SECONDS);
     }
 }
