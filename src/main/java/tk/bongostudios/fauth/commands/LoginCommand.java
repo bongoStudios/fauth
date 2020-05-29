@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -34,11 +33,6 @@ public class LoginCommand {
                     if(!Auth.login(player.getUuid(), pass)) {
                         player.sendMessage(new LiteralText("§cThat isn't your password!"));
                         return 1;
-                    }
-                    if((player.hasStatusEffect(StatusEffects.BLINDNESS) || player.hasStatusEffect(StatusEffects.INVISIBILITY)) && Auth.hasPotion(player)) {
-                        player.removeStatusEffect(StatusEffects.INVISIBILITY);
-                        player.removeStatusEffect(StatusEffects.BLINDNESS);
-                        Auth.removePotion(player);
                     }
                     Auth.removeDescriptor(player.getUuid());
                     Auth.addLoggedIn(player);

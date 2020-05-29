@@ -12,19 +12,27 @@ public class Database {
 
     private final String loc;
     private Connection conn;
+    public static final String version = "2";
     public static final String table = "CREATE TABLE IF NOT EXISTS users (\n"
         + "	uuid text PRIMARY KEY,\n"
         + "	hash text NOT NULL,\n"
-        + "	salt text NOT NULL\n"
+        + " pos text\n"
         + ");";
-    public static final String newUser = "INSERT INTO users VALUES(?,?,?)";
+    public static final String v1ToV2 = "ALTER TABLE users \n"
+        + "ADD pos text;";
 
     public Database(String connection) {
         this.loc = connection;
         try {
             this.conn = this.connect();
             Statement stmt = conn.createStatement();
-            stmt.execute(table);
+            ResultSet v1 = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='{users}';");
+            if(v1.getInt(1) == 1) {
+                stmt.execute(v1ToV2);
+            } else {
+                stmt.execute(table);
+            }
+            stmt.execute("PRAGMA user_version = " + Database.version + ";");
             return;
         } catch(SQLException e) {
             System.err.println(e.getErrorCode());
@@ -36,25 +44,36 @@ public class Database {
         return DriverManager.getConnection(this.loc);
     }
 
-    public void saveNewUser(UUID uuid, String hash, String salt) {
+    public static final String newUser = "INSERT INTO users VALUES(?,?)";
+    public void saveNewUser(UUID uuid, String hash) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement(newUser);
             stmt.setString(1, uuid.toString());
             stmt.setString(2, hash);
-            stmt.setString(3, salt);
             stmt.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public static final String updateUser = "UPDATE users SET hash = ?, salt = ? WHERE uuid = ?";
-    public void updateUserByUUID(UUID uuid, String hash, String salt) {
+    public static final String updatePassword = "UPDATE users SET hash = ? WHERE uuid = ?";
+    public void updatePasswordByUUID(UUID uuid, String hash) {
         try {
-            PreparedStatement stmt = this.conn.prepareStatement(updateUser);
+            PreparedStatement stmt = this.conn.prepareStatement(updatePassword);
             stmt.setString(1, hash);
-            stmt.setString(2, salt);
-            stmt.setString(3, uuid.toString());
+            stmt.setString(2, uuid.toString());
+            stmt.executeUpdate();
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static final String updatePos = "UPDATE users SET pos = ? WHERE uuid = ?";
+    public void updatePosByUUID(UUID uuid, String pos) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement(updatePos);
+            stmt.setString(1, pos);
+            stmt.setString(2, uuid.toString());
             stmt.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
@@ -63,7 +82,6 @@ public class Database {
 
     public static final String getUser = "SELECT * FROM users WHERE uuid = ?";
     public ResultSet getUserByUUID(UUID uuid) {
-        
         try {
             PreparedStatement stmt = this.conn.prepareStatement(getUser);
             stmt.setString(1, uuid.toString());

@@ -1,18 +1,24 @@
 package tk.bongostudios.fauth.mixins;
 
-import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
-import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
-import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.listener.PacketListener;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.ClickWindowC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
+
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,12 +31,17 @@ import java.util.Collections;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
 
+    @Shadow @Final
+    private MinecraftServer server;
     @Shadow
     public ServerPlayerEntity player;
 
     @Inject(method = "onDisconnected", at = @At("HEAD"))
     private void onDisconnect(Text text_1, CallbackInfo ci) {
-        Auth.removeLoggedIn(player);    
+        ServerWorld overworld = server.getWorld(DimensionType.OVERWORLD);
+        BlockPos spawn = overworld.getSpawnPos();
+        player.teleport(overworld, spawn.getX(), spawn.getY(), spawn.getZ(), player.yaw, player.pitch);
+        Auth.removeLoggedIn(player);
     }
 
     @Inject(method = "executeCommand", at = @At("HEAD"), cancellable = true)
@@ -47,14 +58,17 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
         if(!Auth.hasLoggedIn(player)) {
             moveCancel++;
 
-            double x = this.player.x;
-            double y = this.player.y;
-            double z = this.player.z;
-            float yaw = this.player.yaw;
-            float pitch = this.player.pitch;
-
             if (moveCancel > 5) {
-                this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x, y, z, yaw, pitch, Collections.emptySet(), 0));
+                this.player.networkHandler.sendPacket(
+                    new PlayerPositionLookS2CPacket(
+                        this.player.getX(), 
+                        this.player.getY(), 
+                        this.player.getZ(), 
+                        this.player.yaw, 
+                        this.player.pitch, 
+                        Collections.emptySet(), 0
+                    )
+                );
                 moveCancel = 0;
             }
             ci.cancel();
@@ -63,7 +77,8 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
 
     @Inject(method = "onPlayerAction", at = @At("HEAD"), cancellable = true)
     public void onPlayerDrop(PlayerActionC2SPacket playerActionC2SPacket_1, CallbackInfo ci) {
-        if(!(playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM || playerActionC2SPacket_1.getAction() == PlayerActionC2SPacket.Action.DROP_ITEM) || Auth.hasLoggedIn(player)) return;
+        if(playerActionC2SPacket_1.getAction() != PlayerActionC2SPacket.Action.DROP_ITEM
+        || Auth.hasLoggedIn(player)) return;
         ci.cancel();
     }
 
