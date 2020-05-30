@@ -38,6 +38,15 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
 
     @Inject(method = "onDisconnected", at = @At("HEAD"))
     private void onDisconnect(Text text_1, CallbackInfo ci) {
+        if(Auth.hasLoggedIn(player)) {
+            Auth.savePosition(
+                player.getUuid(),
+                player.getX(),
+                player.getY(),
+                player.getZ(),
+                DimensionType.getId(player.world.dimension.getType()).toString()
+            );
+        }
         ServerWorld overworld = server.getWorld(DimensionType.OVERWORLD);
         BlockPos spawn = overworld.getSpawnPos();
         player.teleport(overworld, spawn.getX(), spawn.getY(), spawn.getZ(), player.yaw, player.pitch);

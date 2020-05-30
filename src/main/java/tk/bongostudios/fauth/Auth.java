@@ -1,8 +1,12 @@
 package tk.bongostudios.fauth;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+
 import org.mindrot.jbcrypt.BCrypt;
 import tk.bongostudios.fauth.utils.Descriptor;
+import tk.bongostudios.fauth.utils.PlayerPos;
+
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +49,10 @@ public class Auth {
         return true;
     }
     
-    public static boolean savePosition(UUID uuid, double x, double y, double z) {
-
+    public static boolean savePosition(UUID uuid, double x, double y, double z, String dim) {
+        if(!FauthMod.db.hasUserByUUID(uuid)) return false;
+        FauthMod.db.updatePosByUUID(uuid, x, y, z, dim);
+        return true;
     }
 
     public static void delete(UUID uuid) {
@@ -61,7 +67,11 @@ public class Auth {
         return loggedIn.contains(player);
     }
 
-    public static void addLoggedIn(PlayerEntity player) {
+    public static void addLoggedIn(ServerPlayerEntity player) {
+        PlayerPos pos = getPosition(player.getUuid());
+        if(pos != null) {
+            player.teleport(FauthMod.server.getWorld(pos.dim), pos.x, pos.y, pos.z, player.yaw, player.pitch);
+        }
         loggedIn.add(player);
     }
 
@@ -83,5 +93,24 @@ public class Auth {
 
     public static void removeDescriptor(UUID uuid) {
         tasks.remove(uuid);
+    }
+
+    public static PlayerPos getPosition(UUID uuid) {
+        if(!FauthMod.db.hasUserByUUID(uuid)) return null;
+        ResultSet result = FauthMod.db.getUserByUUID(uuid);
+        try {
+            result.next();
+            if(result.getString(6) == null) return null;
+            return new PlayerPos(
+                result.getDouble(3),
+                result.getDouble(4),
+                result.getDouble(5),
+                result.getString(6)
+            );
+        } catch(SQLException e) {
+            System.err.println(e);
+            e.printStackTrace();
+        }
+        return null;
     }
 }

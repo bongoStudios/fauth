@@ -3,8 +3,8 @@ package tk.bongostudios.fauth.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import tk.bongostudios.fauth.Auth;
 
@@ -23,7 +23,7 @@ public class ForceLoginCommand {
                 .suggests((c, b) -> suggestMatching(c.getSource().getPlayerNames(),b))
                 .executes(c -> {
                     String playerString = getString(c, "player");
-                    PlayerEntity player = c.getSource().getMinecraftServer().getPlayerManager().getPlayer(playerString);
+                    ServerPlayerEntity player = c.getSource().getMinecraftServer().getPlayerManager().getPlayer(playerString);
                     if(player == null) {
                         c.getSource().sendFeedback(new LiteralText("§cNo player specified"), false);
                         return 0;

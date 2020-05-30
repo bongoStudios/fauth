@@ -16,7 +16,10 @@ public class Database {
     public static final String table = "CREATE TABLE IF NOT EXISTS users (\n"
         + "	uuid text PRIMARY KEY,\n"
         + "	hash text NOT NULL,\n"
-        + " pos text\n"
+        + " x real,\n"
+        + " y real,\n"
+        + " z real,\n"
+        + " dimension text\n"
         + ");";
     public static final String v1ToV2 = "ALTER TABLE users \n"
         + "ADD pos text;";
@@ -27,7 +30,8 @@ public class Database {
             this.conn = this.connect();
             Statement stmt = conn.createStatement();
             ResultSet v1 = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='{users}';");
-            if(v1.getInt(1) == 1) {
+            boolean next = v1.next();
+            if(next) {
                 stmt.execute(v1ToV2);
             } else {
                 stmt.execute(table);
@@ -44,7 +48,7 @@ public class Database {
         return DriverManager.getConnection(this.loc);
     }
 
-    public static final String newUser = "INSERT INTO users VALUES(?,?)";
+    public static final String newUser = "INSERT INTO users(uuid,hash) VALUES(?,?)";
     public void saveNewUser(UUID uuid, String hash) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement(newUser);
@@ -68,12 +72,15 @@ public class Database {
         }
     }
 
-    public static final String updatePos = "UPDATE users SET pos = ? WHERE uuid = ?";
-    public void updatePosByUUID(UUID uuid, String pos) {
+    public static final String updatePos = "UPDATE users SET x = ?, y = ?, z = ?, dimension = ? WHERE uuid = ?";
+    public void updatePosByUUID(UUID uuid, double x, double y, double z, String dimension) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement(updatePos);
-            stmt.setString(1, pos);
-            stmt.setString(2, uuid.toString());
+            stmt.setDouble(1, x);
+            stmt.setDouble(2, y);
+            stmt.setDouble(3, z);
+            stmt.setString(4, dimension);
+            stmt.setString(5, uuid.toString());
             stmt.executeUpdate();
         } catch(SQLException e) {
             System.err.println(e.getMessage());
