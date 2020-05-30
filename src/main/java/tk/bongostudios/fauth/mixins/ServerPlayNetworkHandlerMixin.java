@@ -16,7 +16,9 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelProperties;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,7 +50,13 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
             );
         }
         ServerWorld overworld = server.getWorld(DimensionType.OVERWORLD);
-        BlockPos spawn = overworld.getSpawnPos();
+        // Apparently you cant getSpawnPos() from server, kind of weird its client-only
+        LevelProperties properties = overworld.getLevelProperties();
+        BlockPos spawn = new BlockPos(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ());
+        if (!overworld.getWorldBorder().contains(spawn)) {
+            spawn = overworld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(overworld.getWorldBorder().getCenterX(), 0.0D, overworld.getWorldBorder().getCenterZ()));
+        }
+
         player.teleport(overworld, spawn.getX(), spawn.getY(), spawn.getZ(), player.yaw, player.pitch);
         Auth.removeLoggedIn(player);
     }
