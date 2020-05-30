@@ -19,9 +19,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Auth {
-    public static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
-    private static final Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
-    private static final Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
+    public static ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
+    private static Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
+    private static Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
 
     public static void register(UUID uuid, String password) {
         if(FauthMod.db.hasUserByUUID(uuid)) return;
@@ -112,5 +112,12 @@ public class Auth {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public static void clear() {
+        Auth.scheduler.shutdownNow();
+        Auth.scheduler = null;
+        loggedIn.clear();
+        tasks.clear();
     }
 }

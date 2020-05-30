@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
 
-
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/DifficultyS2CPacket;<init>(Lnet/minecraft/world/Difficulty;Z)V"))
 	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         if(Auth.hasAccount(player.getUuid())) {

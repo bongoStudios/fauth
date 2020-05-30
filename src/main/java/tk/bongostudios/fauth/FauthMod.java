@@ -15,7 +15,7 @@ import tk.bongostudios.fauth.commands.RegisterCommand;
 import tk.bongostudios.fauth.db.Database;
 
 public class FauthMod {
-	static Database db;
+	public static Database db;
 	public static MinecraftServer server;
 
 	public static void onInitializeServer(MinecraftServer server) {
@@ -46,6 +46,9 @@ public class FauthMod {
 	}
 
 	public static void close() {
+		Auth.clear();
 		db.close();
+		db = null;
+		server = null;
 	}
 }
