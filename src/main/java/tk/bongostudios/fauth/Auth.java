@@ -12,14 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Auth {
-    public static ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
+    public static ScheduledThreadPoolExecutor scheduler = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
     private static Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
     private static Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
 
@@ -116,7 +115,6 @@ public class Auth {
     
     public static void clear() {
         Auth.scheduler.shutdownNow();
-        Auth.scheduler = null;
         loggedIn.clear();
         tasks.clear();
     }
