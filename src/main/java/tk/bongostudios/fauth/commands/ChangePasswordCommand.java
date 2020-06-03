@@ -31,9 +31,9 @@ public class ChangePasswordCommand {
                     .executes(c -> {
                         ServerPlayerEntity player = (ServerPlayerEntity) c.getSource().getEntity();
                         String pass = getString(c, "password");
-                        if(pass == getString(c, "verify")) {
+                        if(!pass.equals(getString(c, "verify"))) {
                             player.sendSystemMessage(new LiteralText("§cThe password is not the same as the second one!"), Util.NIL_UUID);
-                            return 1;
+                            return 0;
                         }
                         Auth.changePassword(player.getUuid(), pass);
                         player.sendSystemMessage(new LiteralText("§aYou have changed your password!"), Util.NIL_UUID);

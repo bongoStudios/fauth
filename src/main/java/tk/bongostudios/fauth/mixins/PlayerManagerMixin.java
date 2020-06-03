@@ -27,7 +27,7 @@ public abstract class PlayerManagerMixin {
         ScheduledFuture<?> future = Auth.scheduler.scheduleAtFixedRate(() -> player.sendSystemMessage(new LiteralText(Auth.whichDescriptor(player.getUuid()).msg), player.getUuid()), 0, 3, TimeUnit.SECONDS);
 
         Auth.scheduler.schedule(() -> {
-            future.cancel(true);
+            future.cancel(false);
             if(!Auth.hasLoggedIn(player)) {
                 player.networkHandler.disconnect(new LiteralText("You took too much time!"));
             }

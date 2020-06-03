@@ -25,7 +25,7 @@
     "fauth.mixins.json"
   ],
   "depends": {
-    "minecraft": "1.15.x",
+    "minecraft": "1.16.x",
     "fabricloader": ">=0.7.1"
   },
   "suggests": {
