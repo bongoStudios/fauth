@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class Database {
 
-    private final String loc;
+    private String loc;
     private Connection conn;
     public static final String version = "2";
     public static final String table = "CREATE TABLE IF NOT EXISTS users (\n"

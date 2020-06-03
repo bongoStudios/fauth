@@ -12,16 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Auth {
-    public static final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
-    private static final Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
-    private static final Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
+    public static ScheduledThreadPoolExecutor scheduler = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
+    private static Set<PlayerEntity> loggedIn = new HashSet<PlayerEntity>();
+    private static Map<UUID, Descriptor> tasks = new HashMap<UUID, Descriptor>();
 
     public static void register(UUID uuid, String password) {
         if(FauthMod.db.hasUserByUUID(uuid)) return;
@@ -112,5 +111,11 @@ public class Auth {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public static void clear() {
+        Auth.scheduler.shutdownNow();
+        loggedIn.clear();
+        tasks.clear();
     }
 }
