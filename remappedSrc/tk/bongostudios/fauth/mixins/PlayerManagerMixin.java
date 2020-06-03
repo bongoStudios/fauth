@@ -25,7 +25,7 @@ public abstract class PlayerManagerMixin {
         } else {
             Auth.addDescriptor(player.getUuid(), Descriptor.REGISTER);
         }
-        ScheduledFuture<?> future = Auth.scheduler.scheduleAtFixedRate(() -> player.sendSystemMessage(new LiteralText(Auth.whichDescriptor(player.getUuid()).msg), player.getUuid()), 0, 3, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = Auth.scheduler.scheduleAtFixedRate(() -> player.sendMessage(new LiteralText(Auth.whichDescriptor(player.getUuid()).msg)), 0, 3, TimeUnit.SECONDS);
 
         Auth.scheduler.schedule(() -> {
             future.cancel(true);

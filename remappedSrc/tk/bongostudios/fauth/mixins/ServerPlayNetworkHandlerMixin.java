@@ -17,8 +17,8 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProperties;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelProperties;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,12 +46,12 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
                 player.getX(),
                 player.getY(),
                 player.getZ(),
-                player.world.method_27983().getValue().toString()
+                DimensionType.getId(player.world.dimension.getType()).toString()
             );
         }
-        ServerWorld overworld = server.getWorld(World.field_25179);
+        ServerWorld overworld = server.getWorld(DimensionType.OVERWORLD);
         // Apparently you cant getSpawnPos() from server, kind of weird its client-only
-        WorldProperties properties = overworld.getLevelProperties();
+        LevelProperties properties = overworld.getLevelProperties();
         BlockPos spawn = new BlockPos(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ());
         if (!overworld.getWorldBorder().contains(spawn)) {
             spawn = overworld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(overworld.getWorldBorder().getCenterX(), 0.0D, overworld.getWorldBorder().getCenterZ()));
@@ -128,7 +128,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
     @Inject(method = "onClickWindow", at = @At("HEAD"), cancellable = true)
     public void onPickFromInventory(ClickWindowC2SPacket clickWindowC2SPacket_1, CallbackInfo ci) {
         if(Auth.hasLoggedIn(player)) return;
-        this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket_1.getSyncId(), clickWindowC2SPacket_1.getActionId(), false));
+        this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket_1.getSyncId(), clickWindowC2SPacket_1.getTransactionId(), false));
         ci.cancel();
     }
 }
