@@ -46,10 +46,10 @@ public abstract class ServerPlayNetworkHandlerMixin implements PacketListener {
                 player.getX(),
                 player.getY(),
                 player.getZ(),
-                player.world.method_27983().getValue().toString()
+                player.world.getRegistryKey().getValue().toString()
             );
         }
-        ServerWorld overworld = server.getWorld(World.field_25179);
+        ServerWorld overworld = server.getWorld(World.OVERWORLD);
         // Apparently you cant getSpawnPos() from server, kind of weird its client-only
         WorldProperties properties = overworld.getLevelProperties();
         BlockPos spawn = new BlockPos(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ());
