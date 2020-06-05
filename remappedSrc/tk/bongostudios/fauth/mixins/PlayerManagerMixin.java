@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
 
+
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/DifficultyS2CPacket;<init>(Lnet/minecraft/world/Difficulty;Z)V"))
 	private void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         if(Auth.hasAccount(player.getUuid())) {
@@ -24,10 +25,10 @@ public abstract class PlayerManagerMixin {
         } else {
             Auth.addDescriptor(player.getUuid(), Descriptor.REGISTER);
         }
-        ScheduledFuture<?> future = Auth.scheduler.scheduleAtFixedRate(() -> player.sendSystemMessage(new LiteralText(Auth.whichDescriptor(player.getUuid()).msg), player.getUuid()), 0, 3, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = Auth.scheduler.scheduleAtFixedRate(() -> player.sendMessage(new LiteralText(Auth.whichDescriptor(player.getUuid()).msg)), 0, 3, TimeUnit.SECONDS);
 
         Auth.scheduler.schedule(() -> {
-            future.cancel(false);
+            future.cancel(true);
             if(!Auth.hasLoggedIn(player)) {
                 player.networkHandler.disconnect(new LiteralText("You took too much time!"));
             }

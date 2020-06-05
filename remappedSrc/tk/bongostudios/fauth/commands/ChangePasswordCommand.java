@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Util;
 import tk.bongostudios.fauth.Auth;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -31,12 +30,12 @@ public class ChangePasswordCommand {
                     .executes(c -> {
                         ServerPlayerEntity player = (ServerPlayerEntity) c.getSource().getEntity();
                         String pass = getString(c, "password");
-                        if(!pass.equals(getString(c, "verify"))) {
-                            player.sendSystemMessage(new LiteralText("§cThe password is not the same as the second one!"), Util.NIL_UUID);
-                            return 0;
+                        if(pass == getString(c, "verify")) {
+                            player.sendMessage(new LiteralText("§cThe password is not the same as the second one!"));
+                            return 1;
                         }
                         Auth.changePassword(player.getUuid(), pass);
-                        player.sendSystemMessage(new LiteralText("§aYou have changed your password!"), Util.NIL_UUID);
+                        player.sendMessage(new LiteralText("§aYou have changed your password!"));
                         return 1;
                     })
                 )
