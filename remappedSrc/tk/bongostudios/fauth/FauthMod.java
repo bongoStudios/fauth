@@ -22,7 +22,7 @@ public class FauthMod {
 		FauthMod.server = server;
 		String sqliteFile = "jdbc:sqlite:" + FabricLoader.getInstance().getConfigDirectory().getAbsolutePath() + "/fauth.db";
 		FauthMod.db = new Database(sqliteFile);
-		Auth.scheduler.scheduleAtFixedRate(() -> {
+		/*Auth.scheduler.scheduleAtFixedRate(() -> {
 			for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
 				if(Auth.hasLoggedIn(player)) {
 					Auth.savePosition(
@@ -34,7 +34,7 @@ public class FauthMod {
             		);
 				}
 			}
-		}, 0, 60, TimeUnit.SECONDS);
+		}, 0, 60, TimeUnit.SECONDS);*/
 	}
 
 	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
