@@ -70,7 +70,7 @@ public class Auth {
         PlayerPos pos = getPosition(player.getUuid());
         if(pos != null) {
             player.teleport(FauthMod.server.getWorld(pos.dim), pos.x, pos.y, pos.z, player.yaw, player.pitch);
-            Auth.savePosition(player.getUuid(), 0, 0, 0, null); // nullify previous pos
+            Auth.savePosition(player.getUuid(), pos.x, pos.y, pos.z, null);
         }
         loggedIn.add(player);
     }
