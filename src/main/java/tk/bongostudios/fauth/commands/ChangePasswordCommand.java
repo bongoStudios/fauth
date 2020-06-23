@@ -21,7 +21,7 @@ public class ChangePasswordCommand {
             .requires(src -> {
                 try {
                     ServerPlayerEntity player = src.getPlayer();
-                    return Auth.hasAccount(player.getUuid()) && Auth.hasLoggedIn(player);
+                    return Auth.hasAccount(player.getUuid());
                 } catch(CommandSyntaxException e) {
                     return false;
                 }

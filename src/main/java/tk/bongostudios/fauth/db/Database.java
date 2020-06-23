@@ -87,6 +87,20 @@ public class Database {
         }
     }
 
+    public static final String updatePosAll = "UPDATE users SET x = ?, y = ?, z = ?, dimension = ?";
+    public void updateEveryPos(double x, double y, double z, String dimension) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement(updatePosAll);
+            stmt.setDouble(1, x);
+            stmt.setDouble(2, y);
+            stmt.setDouble(3, z);
+            stmt.setString(4, dimension);
+            stmt.executeUpdate();
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
     public static final String getUser = "SELECT * FROM users WHERE uuid = ?";
     public ResultSet getUserByUUID(UUID uuid) {
         try {

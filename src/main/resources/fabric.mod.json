@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "fauth",
-  "version": "1.1.0",
+  "version": "1.2.0",
 
   "name": "fauth",
   "description": "online-mode=false is useful now.",
